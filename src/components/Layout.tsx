@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Server, Key, Route, BarChart3 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Server, Key, Route, BarChart3, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,6 +8,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: '仪表盘' },
@@ -15,6 +17,11 @@ export default function Layout({ children }: LayoutProps) {
     { path: '/routes', icon: Route, label: '路由规则' },
     { path: '/statistics', icon: BarChart3, label: '统计分析' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF5F6] via-white to-[#F5DBDD]/30">
@@ -32,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
                 <p className="text-xs text-muted-foreground">轻量级 API 网关</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -51,6 +58,15 @@ export default function Layout({ children }: LayoutProps) {
                   </Link>
                 );
               })}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="ml-2 hover:bg-red-50 hover:text-red-600 rounded-xl"
+                title="退出登录"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>

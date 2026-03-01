@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Upstreams from './pages/Upstreams';
 import Tokens from './pages/Tokens';
@@ -20,15 +22,60 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/upstreams" element={<Upstreams />} />
-            <Route path="/tokens" element={<Tokens />} />
-            <Route path="/routes" element={<RoutesPage />} />
-            <Route path="/statistics" element={<Statistics />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upstreams"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Upstreams />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tokens"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Tokens />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/routes"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <RoutesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Statistics />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   );

@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import api, { type ApiResponse, type RouteRule } from '@/lib/api';
+import api, { type ApiResponse, type RouteRule, type Upstream } from '@/lib/api';
 import RouteDialog from '@/components/RouteDialog';
 
 export default function Routes() {
@@ -23,6 +23,11 @@ export default function Routes() {
   const { data: routes, isLoading } = useQuery<ApiResponse<RouteRule[]>>({
     queryKey: ['routes'],
     queryFn: () => api.get('/route-rules'),
+  });
+
+  const { data: upstreams } = useQuery<ApiResponse<Upstream[]>>({
+    queryKey: ['upstreams'],
+    queryFn: () => api.get('/upstreams'),
   });
 
   const deleteMutation = useMutation({
@@ -52,6 +57,35 @@ export default function Routes() {
     exact: '精确匹配',
     prefix: '前缀匹配',
     regex: '正则匹配',
+  };
+
+  const getUpstreamName = (upstreamIds?: string) => {
+    if (!upstreamIds || upstreamIds.trim() === '') {
+      return <span className="text-muted-foreground">所有可用上游</span>;
+    }
+
+    const ids = upstreamIds.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+    if (ids.length === 0) {
+      return <span className="text-muted-foreground">所有可用上游</span>;
+    }
+
+    const names = ids.map(id => {
+      const upstream = upstreams?.data?.find((u) => u.id === id);
+      return upstream ? upstream.name : `#${id}`;
+    });
+
+    return (
+      <div className="flex flex-wrap gap-1">
+        {names.map((name, idx) => (
+          <span
+            key={idx}
+            className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#F5DBDD]/30 text-xs font-medium"
+          >
+            {name}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -87,6 +121,7 @@ export default function Routes() {
                   <TableHead className="font-semibold">入站路径</TableHead>
                   <TableHead className="font-semibold">出站路径</TableHead>
                   <TableHead className="font-semibold">匹配类型</TableHead>
+                  <TableHead className="font-semibold">指定上游</TableHead>
                   <TableHead className="font-semibold">优先级</TableHead>
                   <TableHead className="font-semibold">状态</TableHead>
                   <TableHead className="text-right font-semibold">操作</TableHead>
@@ -110,6 +145,9 @@ export default function Routes() {
                       <Badge variant="outline" className="border-[#F5DBDD] text-[#EDC3CC]">
                         {matchTypeLabels[route.match_type]}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {getUpstreamName(route.upstream_ids)}
                     </TableCell>
                     <TableCell>
                       <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#FFF5F6] text-sm font-medium">

@@ -72,6 +72,7 @@ export interface RouteRule {
   outbound_path: string;
   match_type: 'exact' | 'prefix' | 'regex';
   upstream_id?: number;
+  upstream_ids?: string;
   priority: number;
   extra_headers?: Record<string, string>;
   extra_query?: Record<string, string>;

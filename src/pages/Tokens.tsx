@@ -98,16 +98,18 @@ export default function Tokens() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <code className="text-xs font-mono bg-[#FFF5F6] px-2 py-1 rounded">
-                          {token.token_hash.slice(0, 16)}...
+                          {token.token_hash ? token.token_hash.slice(0, 16) + '...' : 'N/A'}
                         </code>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-[#F5DBDD]/20"
-                          onClick={() => copyToClipboard(token.token_hash)}
-                        >
-                          <Copy className="h-3 w-3" />
-                        </Button>
+                        {token.token_hash && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 hover:bg-[#F5DBDD]/20"
+                            onClick={() => copyToClipboard(token.token_hash)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
